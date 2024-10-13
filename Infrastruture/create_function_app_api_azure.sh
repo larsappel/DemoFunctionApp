@@ -33,3 +33,8 @@ az functionapp create --name $FUNCTION_APP_NAME \
                       --functions-version 4 \
                       --storage-account $STORAGE_ACCOUNT_NAME
 
+# Enaable CORS for Function App
+echo "Enabling CORS for Function App..."
+az functionapp cors add --name $FUNCTION_APP_NAME \
+                        --resource-group $RESOURCE_GROUP \
+                        --allowed-origins "*"
