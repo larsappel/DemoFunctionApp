@@ -3,7 +3,7 @@
 # Provision the Azure resources
 cd Infrastruture
 ./check_prerequisites.sh
-./create_function_app_api_azure.sh
+./create_function_app_api_azure_bicep.sh
 
 # Deploy the function app
 cd ../DemoFunction
