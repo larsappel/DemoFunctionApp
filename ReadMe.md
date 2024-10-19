@@ -40,3 +40,24 @@ This file shold be set in .gitignore but is included in the demo
     }
 }
 ```
+
+
+
+
+```bash
+dotnet build
+func azure functionapp publish DemoFunc241019
+
+az functionapp function keys list --resource-group DemoRG --name demofunc241019 --function-name getallentries
+
+az functionapp keys set --resource-group DemoRG --name demofunc241019 --key-name myHostKey --key-type functionKeys --key-value campusmolndal
+ ```
+
+
+https://<your-function-app-name>.azurewebsites.net/api/TableDemo?code=campusmolndal
+
+Summary:
+- Query String: Use ?code=<your-function-key> to pass the key in the query string.
+- Request Header: Use the `x-functions-key` header if you want to avoid putting the key in the URL.
+
+

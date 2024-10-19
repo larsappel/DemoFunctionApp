@@ -18,7 +18,7 @@ namespace DemoFunction
         }
 
         [Function("TableDemo")]
-        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -59,6 +59,29 @@ namespace DemoFunction
             return new OkObjectResult("Welcome to Azure Functions!");
         }
 
+        // Function to get all table entries
+        [Function("GetAllEntries")]
+        public async Task<IActionResult> GetAllEntriesAsync([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+        {
+            _logger.LogInformation("Retrieving all entries from the Azure Table.");
+
+            // Connect to Table Storage in the same storage account as the function
+            string? storageConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+            
+            // Create a new TableClient
+            var tableClient = new TableClient(storageConnectionString, "DemoTable");
+            
+            // Query all entities in the table
+            List<DemoEntity> entities = new List<DemoEntity>();
+            await foreach (var entity in tableClient.QueryAsync<DemoEntity>())
+            {
+                entities.Add(entity);
+            }
+
+            // Return the list of entities as JSON
+            return new OkObjectResult(entities);
+        }
+
         // Define a class to represent the table entity
         public class DemoEntity : ITableEntity
         {
@@ -75,14 +98,21 @@ namespace DemoFunction
             // Constructor
             public DemoEntity(string name, string email)
             {
-
                 PartitionKey = "Demo";
                 RowKey = Guid.NewGuid().ToString();
-                // Timestamp = DateTimeOffset.Now;
-                // ETag = ETag.All;
 
                 Email = email;
                 Name = name;
+            }
+
+            // Parameterless constructor (needed for querying)
+            public DemoEntity()
+            {
+                PartitionKey = "Demo";
+                RowKey = Guid.NewGuid().ToString();
+
+                Email = string.Empty;
+                Name = string.Empty;
             }
         }
 
